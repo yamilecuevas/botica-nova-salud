@@ -10,7 +10,8 @@ import Historial from "./pages/Historial";
 
 import "./App.css";
 
-const API = "http://localhost:3000";
+// SERVIDOR PUBLICADO EN RENDER
+const API = "https://botica-nova-salud-5n5p.onrender.com";
 
 function App() {
   const [productos, setProductos] = useState([]);
@@ -23,6 +24,7 @@ function App() {
     setError(esError);
   };
 
+  // CONSULTAR MEDICAMENTOS
   const cargarProductos = async () => {
     try {
       const respuesta = await fetch(`${API}/productos`);
@@ -38,6 +40,7 @@ function App() {
     }
   };
 
+  // CONSULTAR HISTORIAL DE VENTAS
   const cargarVentas = async () => {
     try {
       const respuesta = await fetch(`${API}/ventas`);
@@ -58,6 +61,7 @@ function App() {
     cargarVentas();
   }, []);
 
+  // VERIFICAR MEDICAMENTOS VENCIDOS
   const estaVencido = (producto) => {
     if (!producto.fechaVencimiento) return false;
 
@@ -78,6 +82,7 @@ function App() {
     return vencimiento <= hoy;
   };
 
+  // FORMATO DE FECHAS
   const formatoFecha = (fecha) => {
     if (!fecha) return "Sin fecha";
 
@@ -86,6 +91,7 @@ function App() {
     });
   };
 
+  // REGISTRAR O ACTUALIZAR MEDICAMENTO
   const guardarProducto = async (formulario, editando) => {
     const precio = Number(formulario.precio);
     const stock = Number(formulario.stock);
@@ -150,6 +156,7 @@ function App() {
     }
   };
 
+  // ELIMINAR MEDICAMENTO
   const eliminarProducto = async (id) => {
     if (!window.confirm("¿Deseas eliminar este medicamento?")) {
       return;
@@ -175,6 +182,7 @@ function App() {
     }
   };
 
+  // REGISTRAR VENTA
   const registrarVenta = async (medicamentoId, cantidad) => {
     try {
       const respuesta = await fetch(`${API}/ventas`, {
