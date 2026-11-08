@@ -6,26 +6,25 @@ function Ventas({ productos, registrarVenta, estaVencido }) {
   const [cantidad, setCantidad] = useState("");
   const [vendiendo, setVendiendo] = useState(false);
 
-  // Medicamentos que se pueden vender
   const disponibles = productos.filter(
     (producto) =>
       Number(producto.stock) > 0 &&
       !estaVencido(producto)
   );
 
-  // Medicamento seleccionado
-  const seleccionado = disponibles.find(
-    (producto) => String(producto._id) === String(productoId)
+  const seleccionado = productos.find(
+    (producto) => String(producto._id) === productoId
   );
 
-  // Calcular cantidad y total
   const unidades = Number(cantidad);
 
-  const total =
-    seleccionado &&
+  const cantidadValida =
     cantidad !== "" &&
     Number.isInteger(unidades) &&
-    unidades > 0
+    unidades > 0;
+
+  const total =
+    seleccionado && cantidadValida
       ? Number(seleccionado.precio) * unidades
       : 0;
 
@@ -36,8 +35,8 @@ function Ventas({ productos, registrarVenta, estaVencido }) {
 
     if (
       !seleccionado ||
-      !Number.isInteger(unidades) ||
-      unidades <= 0 ||
+      estaVencido(seleccionado) ||
+      !cantidadValida ||
       unidades > Number(seleccionado.stock)
     ) {
       alert("Verifica el medicamento y la cantidad disponible.");
@@ -70,10 +69,12 @@ function Ventas({ productos, registrarVenta, estaVencido }) {
         <h2>Nueva venta</h2>
 
         <form onSubmit={guardarVenta} className="formulario">
-
-          <label>Seleccionar medicamento</label>
+          <label htmlFor="medicamento">
+            Seleccionar medicamento
+          </label>
 
           <select
+            id="medicamento"
             value={productoId}
             onChange={(e) => {
               setProductoId(e.target.value);
@@ -101,12 +102,15 @@ function Ventas({ productos, registrarVenta, estaVencido }) {
             </p>
           )}
 
-          <label>Cantidad a vender</label>
+          <label htmlFor="cantidad">
+            Cantidad a vender
+          </label>
 
           <input
+            id="cantidad"
             type="number"
             min="1"
-            max={seleccionado ? seleccionado.stock : undefined}
+            max={seleccionado?.stock}
             step="1"
             placeholder="Ingrese la cantidad"
             value={cantidad}
@@ -126,16 +130,14 @@ function Ventas({ productos, registrarVenta, estaVencido }) {
               </strong>
             </p>
 
-            <p>
-              Precio unitario: S/{" "}
-              {seleccionado
-                ? Number(seleccionado.precio).toFixed(2)
-                : "0.00"}
-            </p>
+          <p>
+  Precio unitario: S/ {seleccionado
+  ? Number(seleccionado.precio).toFixed(2)
+  : "0.00"}
+</p>
 
             <p>
-              Cantidad:{" "}
-              {cantidad !== "" ? cantidad : "0"}
+              Cantidad: {cantidad || "0"}
             </p>
 
             <h2>
@@ -145,13 +147,17 @@ function Ventas({ productos, registrarVenta, estaVencido }) {
 
           <button
             type="submit"
-            disabled={vendiendo}
+            disabled={
+              vendiendo ||
+              !seleccionado ||
+              !cantidadValida ||
+              unidades > Number(seleccionado.stock)
+            }
           >
             {vendiendo
               ? "Registrando..."
               : "Registrar venta"}
           </button>
-
         </form>
       </section>
     </div>
