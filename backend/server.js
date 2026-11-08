@@ -1,4 +1,4 @@
-
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -10,7 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 // CONEXIÓN A MONGODB
-mongoose.connect("mongodb://127.0.0.1:27017/botica_nova_salud")
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB conectado correctamente"))
   .catch(error => console.log("Error de conexión:", error));
 
